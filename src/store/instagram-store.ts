@@ -18,6 +18,16 @@ export function extractReelUrls(text: string) {
   return Array.from(new Set(found));
 }
 
+/** @beegainsacademy reels shown out of the box. */
+export const DEFAULT_REEL_URLS = extractReelUrls(`
+  https://www.instagram.com/reel/DfCSvB-gtCk/
+  https://www.instagram.com/reel/DewY-k3jg31/
+  https://www.instagram.com/reels/DemDwNpAVNt/
+  https://www.instagram.com/reel/DeO5Xx5iH6G/
+  https://www.instagram.com/reel/DdgbomMGtNp/
+  https://www.instagram.com/reel/DcyMnofAeiR/
+`);
+
 type InstagramState = {
   username: string;
   /** Reel permalinks added by hand (used when no API token is configured). */
@@ -33,7 +43,7 @@ export const useInstagramStore = create<InstagramState>()(
   persist(
     (set, get) => ({
       username: "beegainsacademy",
-      urls: [],
+      urls: DEFAULT_REEL_URLS,
       setUsername: (username) => set({ username: username.replace(/^@/, "").trim() }),
       addUrls: (urls) => {
         const existing = new Set(get().urls);
@@ -52,6 +62,16 @@ export const useInstagramStore = create<InstagramState>()(
       },
       clearUrls: () => set({ urls: [] }),
     }),
-    { name: "content-studio-instagram", storage: createJSONStorage(() => localStorage) },
+    {
+      name: "content-studio-instagram",
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+      // v0 → v1: browsers that saved an empty list before the defaults existed get them now.
+      migrate: (persisted, version) => {
+        const state = (persisted ?? {}) as Partial<Pick<InstagramState, "username" | "urls">>;
+        if (version < 1 && !state.urls?.length) return { ...state, urls: DEFAULT_REEL_URLS };
+        return state;
+      },
+    },
   ),
 );

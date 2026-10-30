@@ -11,7 +11,7 @@ const RING = 2 * Math.PI * 25;
 /** What floats above the character's head. While patrolling it cycles through the team's actions in sync with each stop. */
 function ActionLabel({ worker, team, patrolling }: { worker: Worker; team: TeamInfo; patrolling: boolean }) {
   if (worker.status === "done") return <span className="world-label world-label-done">✓ Reel done!</span>;
-  if (worker.status === "error") return <span className="world-label world-label-error">⚠ Needs a retry</span>;
+  if (worker.status === "error") return <span className="world-label world-label-error">🔧 Fixing a glitch…</span>;
   if (worker.status === "paused") return <span className="world-label world-label-paused motion-loop">z z z · paused</span>;
   if (!patrolling) return <span className="world-label">{team.actions[0]}…</span>;
   return (

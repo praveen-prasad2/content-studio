@@ -13,13 +13,15 @@ import type {
   WorkspaceExport,
 } from "@/types";
 import { createDefaultWorkers, ROLE_TEMPLATES } from "@/data/workers";
-import { createDefaultReels, IDEA_POOL, stageAction } from "@/data/reels";
+import { createDefaultReels, IDEA_POOL, stageAction, thumbnailForNumber } from "@/data/reels";
 import { createDefaultActivity, RANDOM_EVENTS } from "@/data/activity";
 
 const MAX_ACTIVITY = 30;
 const MAX_HISTORY = 50;
 const MAX_REELS = 40;
 const DONE_HOLD_MS = 1500;
+/** How long a worker spends fixing a glitch before getting back to work on their own. */
+const GLITCH_FIX_MS = 4000;
 
 let idCounter = 0;
 export const uid = (prefix: string) =>
@@ -630,7 +632,19 @@ export const useWorkspaceStore = create<WorkspaceStore>()(
             const now = Date.now();
 
             d.workers.forEach((w, idx) => {
-              if (w.status === "paused" || w.status === "error") return;
+              if (w.status === "paused") return;
+              if (w.status === "error") {
+                // Workers fix glitches themselves. Errors set by hand (no timer yet) get one now.
+                if (!w.doneUntil) {
+                  w.doneUntil = now + GLITCH_FIX_MS;
+                  return;
+                }
+                if (now < w.doneUntil) return;
+                w.status = w.currentReelId ? "working" : "waiting";
+                w.doneUntil = undefined;
+                d.log(w.id, `${w.name} fixed the glitch and is back to work`, "success");
+                return;
+              }
               if (w.status === "done") {
                 if (w.doneUntil && now < w.doneUntil) return;
                 if (w.currentReelId) {
@@ -691,11 +705,13 @@ export const useWorkspaceStore = create<WorkspaceStore>()(
 
             if (w.status === "working" && Math.random() < 0.08) {
               return {
-                workers: s.workers.map((x) => (x.id === w.id ? { ...x, status: "error" } : x)),
+                workers: s.workers.map((x) =>
+                  x.id === w.id ? { ...x, status: "error", doneUntil: Date.now() + GLITCH_FIX_MS } : x,
+                ),
                 activities: addActivity(
                   s.activities,
                   w.id,
-                  `${w.name} hit a snag on Reel #${reelNumber} — needs a retry`,
+                  `${w.name} hit a glitch on Reel #${reelNumber} — fixing it now`,
                   "warning",
                 ),
               };
@@ -778,8 +794,21 @@ export const useWorkspaceStore = create<WorkspaceStore>()(
     },
     {
       name: "content-studio-workspace",
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => localStorage),
+      // v1 → v2: stock Unsplash covers become the @beegainsacademy thumbnails. Uploaded covers are kept.
+      migrate: (persisted, version) => {
+        const state = (persisted ?? {}) as Partial<WorkspaceState>;
+        if (version < 2 && Array.isArray(state.reels)) {
+          const seeded = new Map(createDefaultReels().map((r) => [r.id, r.thumbnail]));
+          state.reels = state.reels.map((r) =>
+            r.thumbnail.includes("images.unsplash.com")
+              ? { ...r, thumbnail: seeded.get(r.id) ?? thumbnailForNumber(r.number) }
+              : r,
+          );
+        }
+        return state as WorkspaceStore;
+      },
       partialize: (s) => ({
         workspaceName: s.workspaceName,
         themeAccent: s.themeAccent,

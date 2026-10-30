@@ -305,7 +305,7 @@
 }
 .world-char[data-status="error"] .world-char-rig {
   animation: world-shake 0.5s ease-in-out 3;
-  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9));
+  filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.9));
 }
 .world-char[data-status="done"] .world-char-rig {
   animation: world-jump 0.6s ease-out 2;
@@ -461,7 +461,7 @@
 }
 .world-label-error {
   border-color: transparent;
-  background: #dc2626;
+  background: #ea580c;
 }
 .world-label-paused {
   color: #a5b4fc;

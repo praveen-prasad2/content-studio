@@ -7,7 +7,7 @@ const STYLES: Record<WorkerStatus, { label: string; className: string; dot: stri
   waiting: { label: "Waiting", className: "bg-amber-500/10 text-amber-300 border-amber-500/25 motion-loop motion-safe:animate-breathe", dot: "bg-amber-400" },
   done: { label: "Done", className: "bg-sky-500/10 text-sky-300 border-sky-500/25", dot: "" },
   paused: { label: "Paused", className: "bg-white/[0.06] text-white/60 border-white/10", dot: "bg-white/40" },
-  error: { label: "Error", className: "bg-red-500/10 text-red-300 border-red-500/30", dot: "bg-red-400" },
+  error: { label: "Fixing", className: "bg-orange-500/10 text-orange-300 border-orange-500/30", dot: "bg-orange-400" },
 };
 
 export const STATUS_LABELS: Record<WorkerStatus, string> = {
@@ -15,7 +15,7 @@ export const STATUS_LABELS: Record<WorkerStatus, string> = {
   waiting: "Waiting",
   done: "Done",
   paused: "Paused",
-  error: "Error",
+  error: "Fixing a glitch",
 };
 
 export function StatusPill({ status, className }: { status: WorkerStatus; className?: string }) {

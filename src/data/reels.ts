@@ -1,28 +1,43 @@
 import type { Reel, ReelStats, WorkerRole } from "@/types";
 
-const img = (id: string) =>
-  `https://images.unsplash.com/photo-${id}?w=540&h=960&fit=crop&crop=entropy&auto=format&q=70`;
+/** @beegainsacademy reel covers, served from /public/thumbnails. */
+export const BEEGAINS_THUMBNAILS = [
+  "/thumbnails/beegains-gauntlet.jpg",
+  "/thumbnails/beegains-classroom.jpg",
+  "/thumbnails/beegains-studio.jpg",
+  "/thumbnails/beegains-speaking.jpg",
+  "/thumbnails/beegains-growth.jpg",
+] as const;
 
+const [gauntlet, classroom, studio, speaking, growth] = BEEGAINS_THUMBNAILS;
+
+/**
+ * Thumbnail per seed slot. Reels #19–#24 start in the six rooms, so those get
+ * distinct covers (fitness → tech2 run through all five images in order).
+ */
 export const THUMBNAILS = {
-  tech: img("1498050108023-c5249f4df085"),
-  tech2: img("1517694712202-14dd9538aa97"),
-  food: img("1504674900247-0877df9cc836"),
-  food2: img("1512621776951-a57141f2eefd"),
-  travel: img("1507525428034-b723cf961d3e"),
-  travel2: img("1469854523086-cc02fe5d8800"),
-  fitness: img("1517836357463-d25dfeac3438"),
-  fitness2: img("1571019613454-1cb2f99b2d8b"),
-  product: img("1523275335684-37898b6baf30"),
-  product2: img("1505740420928-5e560c06d30e"),
-  bts: img("1492691527719-9d1e07e534b4"),
-  bts2: img("1516035069371-29a1b244cc32"),
-  motivation: img("1506126613408-eca07ce68773"),
-  motivation2: img("1500530855697-b586d89ba3ee"),
-  comedy: img("1529156069898-49953e39b3ac"),
-  comedy2: img("1511632765486-a01980e01a18"),
+  fitness: gauntlet,
+  product: classroom,
+  bts: studio,
+  motivation: speaking,
+  comedy: growth,
+  tech2: gauntlet,
+  tech: classroom,
+  food: studio,
+  travel: speaking,
+  food2: growth,
+  travel2: classroom,
+  product2: studio,
+  fitness2: speaking,
+  motivation2: growth,
+  comedy2: gauntlet,
+  bts2: classroom,
 } as const;
 
-export const THUMBNAIL_CHOICES = Object.values(THUMBNAILS);
+export const THUMBNAIL_CHOICES: string[] = [...BEEGAINS_THUMBNAILS];
+
+/** Cover for a reel that has no seeded thumbnail (e.g. migrated or generated ones). */
+export const thumbnailForNumber = (n: number) => BEEGAINS_THUMBNAILS[Math.abs(n) % BEEGAINS_THUMBNAILS.length];
 
 type Seed = {
   n: number;

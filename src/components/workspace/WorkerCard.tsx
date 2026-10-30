@@ -231,13 +231,13 @@ function WorkerCardInner({ workerId, index, total, layout }: WorkerCardProps) {
                 {parked ? <ArrowRight /> : <SkipForward />}
               </Button>
             </Tooltip>
-            <Tooltip content={worker.status === "error" ? "Retry" : "Restart task"}>
+            <Tooltip content={worker.status === "error" ? "Fix now" : "Restart task"}>
               <Button
                 variant="ghost"
                 size="icon-sm"
                 aria-label={`Retry ${worker.name}`}
                 onClick={() => retryWorker(worker.id)}
-                className={worker.status === "error" ? "text-red-300 hover:text-red-200" : undefined}
+                className={worker.status === "error" ? "text-orange-300 hover:text-orange-200" : undefined}
               >
                 <RotateCcw />
               </Button>

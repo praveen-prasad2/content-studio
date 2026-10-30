@@ -18,7 +18,9 @@ Requires Node 18.18+.
 ## Features
 
 - **3D World view (the default).** The workspace is an isometric studio floor with a walled room for each team: Research Lab, Strategy War Room, Writers' Room, Edit Suite, Launch Pad and Data Observatory.
-  - Each room has its real worker as team lead, plus a crew of three robot specialists who type, idle, sleep or panic depending on the lead's status. Workers who share a role sit at the crew desks instead.
+  - Each room has one character: the real worker. They walk a loop around the room (desk → wall screen → team prop → side wall → desk), and a speech label says what they're doing at each stop ("Scanning trends…", "Cutting clips…").
+  - A progress ring circles their head, work symbols float up, their arms keep gesturing, their chair swivels and their mug steams. When paused, the loop freezes and they show "z z z". On a glitch, they shake, show "🔧 Fixing a glitch…" and get back to work on their own a few seconds later. Faster workers walk faster.
+  - Every room also has a server rack with blinking lights, a swaying plant, and a delivery drone circling overhead carrying the current reel. Packets flow along the conveyor between rooms. Workers who share a role get their own back-row desk.
   - The back wall has a live screen showing the reel being worked on. The side wall shows team art that updates with progress: sticky notes, a typed script, a timeline, the posting schedule or a growth chart.
   - Each room has its own animated prop: a radar and globe, a holo table, floating letters, a film strip, a launch pad with a rocket, or a 3D bar chart.
   - A glowing conveyor links the rooms in pipeline order. Finished reels arc through the air to the next room.
@@ -50,7 +52,7 @@ Requires Node 18.18+.
 - **Simulation:**
   - Ticks every 800 ms. Each tick adds progress equal to the worker's speed × a random 1–4, scaled by the speed control (0.5×, 1×, 2×).
   - At 100% a worker shows "done" for 1.5 s, then hands the reel on.
-  - Random events happen every 10–20 s, including the occasional error that needs a Retry.
+  - Random events happen every 10–20 s, including the occasional glitch, which the worker fixes themselves after about 4 s (or press Fix now).
   - When Research runs out of work it scouts new reel ideas.
   - Published reels keep gaining views.
 - **Right panel:** Live Activity, Task Queue (with "+ New Reel" and image upload) and Today's Stats (count-up numbers and a per-worker bar chart).
@@ -93,6 +95,6 @@ src/
   types/               shared types
 ```
 
-Mock thumbnails are loaded from Unsplash and avatars from DiceBear. If an image fails to load, the app shows a gradient or initials instead.
+Reel thumbnails are @beegainsacademy covers stored in `public/thumbnails/` (add more there and list them in `BEEGAINS_THUMBNAILS` in `src/data/reels.ts`). Avatars come from DiceBear. If an image fails to load, the app shows a gradient or initials instead.
 
 To start over, use **Settings → Reset workspace** or clear the `content-studio-workspace` key in `localStorage`.

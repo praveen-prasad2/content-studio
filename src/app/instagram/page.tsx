@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Camera, ExternalLink, Info, Link2, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Camera, ExternalLink, Info, Link2, Plus, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import type { InstagramApiResponse } from "@/app/api/instagram/route";
 import { extractReelUrls, useInstagramStore } from "@/store/instagram-store";
@@ -21,6 +21,8 @@ export default function InstagramPage() {
   const [draft, setDraft] = useState("");
   const [nameDraft, setNameDraft] = useState(username);
   const [shown, setShown] = useState(PAGE);
+  // The setup box starts open only while there's nothing to show.
+  const [formOpen, setFormOpen] = useState(() => urls.length === 0);
 
   const load = () => {
     setApi({ loading: true });
@@ -65,6 +67,11 @@ export default function InstagramPage() {
           </div>
         </div>
         <div className="flex gap-2">
+          {!usingApi && !formOpen && (
+            <Button variant="primary" onClick={() => setFormOpen(true)}>
+              <Plus /> Add more reels
+            </Button>
+          )}
           {"configured" in api && api.configured && (
             <Button variant="ghost" onClick={load}>
               <RefreshCw /> Refresh
@@ -82,8 +89,13 @@ export default function InstagramPage() {
         <div className="glass-card !rounded-2xl border-red-500/30 p-4 text-sm text-red-200">Instagram API: {api.error}. Showing manually added reels instead.</div>
       )}
 
-      {!usingApi && (
-        <section className="glass-card grid gap-5 p-5 md:grid-cols-[1fr_1.2fr] md:p-6">
+      {!usingApi && formOpen && (
+        <section className="glass-card relative grid gap-5 p-5 md:grid-cols-[1fr_1.2fr] md:p-6">
+          {list.length > 0 && (
+            <Button variant="ghost" size="icon-sm" className="absolute right-3 top-3" aria-label="Hide the add-reels form" onClick={() => setFormOpen(false)}>
+              <X />
+            </Button>
+          )}
           <div className="space-y-3 text-sm text-foreground/85">
             <h2 className="flex items-center gap-2 font-semibold">
               <Info className="h-4 w-4 text-accent" /> How this works

@@ -167,8 +167,8 @@ function TeamPanel({ room, onClose }: { room: RoomLayout; onClose: () => void })
                     <SkipForward />
                   </Button>
                 </Tooltip>
-                <Tooltip content={w.status === "error" ? "Retry" : "Restart task"}>
-                  <Button variant="ghost" size="icon-sm" aria-label={`Retry ${w.name}`} onClick={() => retryWorker(w.id)} className={w.status === "error" ? "text-red-300" : undefined}>
+                <Tooltip content={w.status === "error" ? "Fix now" : "Restart task"}>
+                  <Button variant="ghost" size="icon-sm" aria-label={`Retry ${w.name}`} onClick={() => retryWorker(w.id)} className={w.status === "error" ? "text-orange-300" : undefined}>
                     <RotateCcw />
                   </Button>
                 </Tooltip>
